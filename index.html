@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shelf – Library and Digital Resource Management</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#17212b;--mute:#5d6b79;--line:#d9e0e6;--brand:#24527a;--brand-ink:#fff;--ok:#2d7a52;--warn:#a8650a;--bad:#b3261e;--off:#9aa5b1;--bg2:#e9eef3;
+color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f161d;--card:#18222c;--ink:#e6edf3;--mute:#9aa8b6;--line:#2a3744;--brand:#6fa8dc;--brand-ink:#0b1722;--ok:#59c08a;--warn:#e0a24a;--bad:#ff7b72;--off:#5d6b79;--bg2:#1f2b37;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f161d;--card:#18222c;--ink:#e6edf3;--mute:#9aa8b6;--line:#2a3744;--brand:#6fa8dc;--brand-ink:#0b1722;--ok:#59c08a;--warn:#e0a24a;--bad:#ff7b72;--off:#5d6b79;--bg2:#1f2b37;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:Newsreader,Georgia,serif;margin:0;line-height:1.2}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--card)}
+.logo{font:700 26px Newsreader,Georgia,serif;letter-spacing:.2px}
+.logo small{display:block;font:400 12px "IBM Plex Sans",sans-serif;color:var(--mute);letter-spacing:0}
+nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0}
+nav button{border:0;background:none;color:var(--mute);font:500 14px inherit;font-family:inherit;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap}
+nav button[aria-current="page"]{background:var(--brand);color:var(--brand-ink)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.tools{display:flex;gap:8px;align-items:center;color:var(--mute);font-size:12px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:500 13px inherit;font-family:inherit;padding:7px 12px;border-radius:8px;cursor:pointer}
+.btn.pri{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+main{max-width:1100px;margin:0 auto;padding:20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0 24px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.stat b{display:block;font:700 28px Newsreader,serif}
+.stat span{color:var(--mute);font-size:13px}
+.stat.bad b{color:var(--bad)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:20px}
+.panel h3{margin-bottom:10px}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:500;font-size:13px}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;background:var(--bg2);color:var(--mute)}
+.tag.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.tag.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.tag.warn{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+input[type=search]{flex:1;min-width:200px}
+.book{display:flex;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.spine{width:12px;flex:none}
+.book .in{padding:12px 14px 12px 0;flex:1;min-width:0}
+.book h3{font-size:18px}
+.meta{color:var(--mute);font-size:13px;margin:2px 0 8px}
+.copies{display:flex;gap:5px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--mute)}
+.sq{width:16px;height:16px;border-radius:4px;display:inline-block}
+.sq.a{background:var(--ok)}.sq.i{background:var(--warn)}.sq.x{background:var(--off)}
+.legend{font-size:13px;color:var(--mute);display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.bar{height:10px;background:var(--brand);border-radius:5px;min-width:3px}
+.top{display:grid;grid-template-columns:minmax(0,220px) 1fr 28px;gap:10px;align-items:center;font-size:14px;margin:6px 0}
+.top span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#msg{min-height:24px;margin-bottom:12px;font-weight:500}
+#msg.err{color:var(--bad)}#msg.good{color:var(--ok)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:800px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Shelf<small>Library and digital resources</small></div>
+  <nav id="nav" aria-label="Sections"></nav>
+  <div class="tools"><span id="today"></span><button class="btn" id="reset" type="button">Reset data</button></div>
+</header>
+<main id="app"></main>
+<script>
+(function(){
+var TODAY='2026-11-20';
+var PLANS={Basic:{max:3,days:14,fine:5},Student:{max:5,days:21,fine:2},Premium:{max:10,days:30,fine:1}};
+var CATS={3:'Databases',4:'Programming',5:'Artificial Intelligence',7:'Fiction',8:'Biography',9:'Science',10:'Mathematics',11:'History',2:'Computer Science'};
+var SPINE={Databases:'#24527a',Programming:'#2d7a52',"Artificial Intelligence":'#6a4c93',Fiction:'#a8650a',Biography:'#b3261e',Science:'#1f8a99',Mathematics:'#7a6a24',History:'#7b4b3a',"Computer Science":'#4a5a6a'};
+var RES=[
+[1,'Database System Concepts','Silberschatz, Korth, Sudarshan','P',3,2019,[1,2,3]],
+[2,'Fundamentals of Database Systems','Elmasri, Navathe','P',3,2016,[4,5]],
+[3,'Introduction to Algorithms','Cormen','P',4,2022,[6,7]],
+[4,'Clean Code','Robert Martin','P',4,2008,[8,9]],
+[5,'The C Programming Language','Kernighan, Ritchie','P',4,1988,[10,11]],
+[6,'Artificial Intelligence: A Modern Approach','Russell, Norvig','P',5,2021,[12,13]],
+[7,'Discrete Mathematics and Its Applications','Kenneth Rosen','P',10,2018,[14]],
+[8,'Wings of Fire','A.P.J. Abdul Kalam','P',8,1999,[15,16]],
+[9,'The Discovery of India','Jawaharlal Nehru','P',11,1946,[17]],
+[10,'A Brief History of Time','Stephen Hawking','P',9,1988,[18,19]],
+[11,'The Guide','R.K. Narayan','P',7,1958,[20,21]],
+[12,'Godan','Munshi Premchand','P',7,1936,[22]],
+[17,'Operating System Concepts','Silberschatz, Galvin, Gagne','P',2,2018,[23,24]],
+[13,'Learning SQL (eBook)','Alan Beaulieu','D',3,2020,'PDF · 12.5 MB',10],
+[14,'Python Crash Course (eBook)','Eric Matthes','D',4,2019,'EPUB · 8.2 MB',6],
+[15,'Wings of Fire (Audiobook)','A.P.J. Abdul Kalam','D',8,2015,'MP3 · 210 MB',3],
+[16,'Cosmos (eBook)','Carl Sagan','D',9,1980,'EPUB · 15.4 MB',4]];
+var BADCOPY={14:'LOST',3:'DAMAGED'};
+var MEM=[[1,'Aarav Mehta','Student','ACTIVE'],[2,'Ananya Singh','Student','ACTIVE'],[3,'Rohan Verma','Student','ACTIVE'],[4,'Priya Nair','Student','ACTIVE'],[5,'Karan Malhotra','Basic','ACTIVE'],[6,'Sneha Kapoor','Student','ACTIVE'],[7,'Vikram Rao','Student','SUSPENDED'],[8,'Neha Gupta','Basic','ACTIVE'],[9,'Arjun Yadav','Student','ACTIVE'],[10,'Simran Kaur','Student','ACTIVE'],[11,'Dev Patel','Premium','ACTIVE'],[12,'Isha Joshi','Premium','ACTIVE'],[13,'Kabir Anand','Student','ACTIVE'],[14,'Meera Iyer','Basic','ACTIVE']];
+var LOANS0=[[1,1,'2026-08-03','2026-08-24','2026-08-20'],[2,1,'2026-08-25','2026-09-15','2026-09-20'],[3,4,'2026-08-05','2026-08-26','2026-08-25'],[1,6,'2026-08-10','2026-08-31','2026-09-05'],[4,8,'2026-08-12','2026-09-02','2026-09-01'],[5,10,'2026-08-14','2026-08-28','2026-09-10'],[6,12,'2026-08-20','2026-09-10','2026-09-08'],[2,15,'2026-09-01','2026-09-22','2026-09-22'],[7,17,'2026-09-02','2026-09-23','2026-10-01'],[3,2,'2026-09-05','2026-09-26','2026-09-24'],[8,18,'2026-09-10','2026-09-24','2026-09-30'],[10,20,'2026-09-12','2026-10-03','2026-10-02'],[11,3,'2026-09-15','2026-10-15','2026-10-10'],[12,14,'2026-09-18','2026-10-18','2026-10-12'],[4,4,'2026-09-20','2026-10-11','2026-10-14'],[1,1,'2026-09-22','2026-10-13','2026-10-10'],[9,6,'2026-09-25','2026-10-16','2026-10-12'],[6,22,'2026-10-01','2026-10-22','2026-10-25'],[10,7,'2026-10-02','2026-10-23','2026-10-20'],[2,12,'2026-10-05','2026-10-26','2026-10-24'],[3,2,'2026-10-06','2026-10-27','2026-10-30'],[11,8,'2026-10-08','2026-11-07','2026-11-02'],[1,15,'2026-10-10','2026-10-31','2026-11-03'],[12,10,'2026-10-12','2026-11-11','2026-11-05'],[1,5,'2026-11-01','2026-11-22',null],[2,9,'2026-10-20','2026-11-10',null],[3,13,'2026-10-25','2026-11-15',null],[4,16,'2026-10-28','2026-11-18',null],[5,19,'2026-10-30','2026-11-13',null],[6,21,'2026-11-05','2026-11-26',null],[10,11,'2026-11-10','2026-12-01',null],[11,2,'2026-11-12','2026-12-12',null],[12,18,'2026-11-15','2026-12-15',null],[8,20,'2026-11-02','2026-11-16',null]];
+var RESV=[[4,6],[5,5],[10,4],[2,5],[12,10],[13,11]];
+var S;
+function fresh(){return {loans:LOANS0.map(function(l,i){return {id:i+1,m:l[0],c:l[1],i:l[2],d:l[3],r:l[4]}}),fine:0}}
+try{var raw=localStorage.getItem('shelf_state_v1');S=raw?JSON.parse(raw):fresh()}catch(e){S=fresh()}
+if(!S||!S.loans)S=fresh();
+function save(){try{localStorage.setItem('shelf_state_v1',JSON.stringify(S))}catch(e){}}
+function days(a,b){return Math.round((Date.parse(b)-Date.parse(a))/864e5)}
+function addDays(d,n){var t=new Date(Date.parse(d)+n*864e5);return t.toISOString().slice(0,10)}
+function mem(id){return MEM.filter(function(m){return m[0]===id})[0]}
+function resOfCopy(c){return RES.filter(function(r){return r[3]==='P'&&r[6].indexOf(c)>-1})[0]}
+function open(){return S.loans.filter(function(l){return !l.r})}
+function cstatus(c){if(BADCOPY[c])return BADCOPY[c];return open().some(function(l){return l.c===c})?'ISSUED':'AVAILABLE'}
+function openOf(m){return open().filter(function(l){return l.m===m}).length}
+function fineOf(l){if(!l.r||l.r<=l.d)return 0;return days(l.d,l.r)*PLANS[mem(l.m)[2]].fine}
+function overdue(){return open().filter(function(l){return l.d<TODAY})}
+function tagS(s){return '<span class="tag '+(s==='AVAILABLE'||s==='ACTIVE'?'ok':s==='ISSUED'?'warn':'bad')+'">'+s.toLowerCase()+'</span>'}
+var tabs=[['over','Overview'],['cat','Catalogue'],['circ','Circulation'],['mem','Members'],['res','Reservations']];
+var cur='over',q='',tf='',msg='',mcls='';
+function nav(){document.getElementById('nav').innerHTML=tabs.map(function(t){return '<button type="button" data-t="'+t[0]+'"'+(t[0]===cur?' aria-current="page"':'')+'>'+t[1]+'</button>'}).join('')}
+function vOver(){
+  var ps=RES.filter(function(r){return r[3]==='P'}),tot=0,av=0;
+  ps.forEach(function(r){r[6].forEach(function(c){tot++;if(cstatus(c)==='AVAILABLE')av++})});
+  var od=overdue(),accr=od.reduce(function(s,l){return s+days(l.d,TODAY)*PLANS[mem(l.m)[2]].fine},0);
+  var charged=S.loans.reduce(function(s,l){return s+fineOf(l)},0);
+  var cnt={};S.loans.forEach(function(l){var r=resOfCopy(l.c);cnt[r[1]]=(cnt[r[1]]||0)+1});
+  RES.filter(function(r){return r[3]==='D'}).forEach(function(r){cnt[r[1]]=r[7]});
+  var top=Object.keys(cnt).map(function(k){return [k,cnt[k]]}).sort(function(a,b){return b[1]-a[1]}).slice(0,6),mx=top[0][1];
+  return '<div class="stats"><div class="stat"><b>'+RES.length+'</b><span>Titles in catalogue</span></div><div class="stat"><b>'+av+' / '+tot+'</b><span>Physical copies on shelf</span></div><div class="stat"><b>'+open().length+'</b><span>Books out on loan</span></div><div class="stat bad"><b>'+od.length+'</b><span>Overdue books</span></div><div class="stat"><b>₹'+charged+'</b><span>Fines charged · ₹'+accr+' accruing</span></div></div>'+
+  '<div class="two"><div class="panel"><h3>Overdue books</h3>'+(od.length?'<div class="wrap"><table><tr><th>Member</th><th>Title</th><th>Days late</th><th>Fine so far</th></tr>'+od.sort(function(a,b){return a.d<b.d?-1:1}).map(function(l){var n=days(l.d,TODAY);return '<tr><td>'+mem(l.m)[1]+'</td><td>'+resOfCopy(l.c)[1]+'</td><td><span class="tag bad">'+n+'</span></td><td>₹'+n*PLANS[mem(l.m)[2]].fine+'</td></tr>'}).join('')+'</table></div>':'<p class="meta">No overdue books. Everything is on time.</p>')+'</div>'+
+  '<div class="panel"><h3>Most used resources</h3>'+top.map(function(t){return '<div class="top"><span title="'+t[0]+'">'+t[0]+'</span><span><div class="bar" style="width:'+Math.round(t[1]/mx*100)+'%"></div></span><span>'+t[1]+'</span></div>'}).join('')+'<p class="meta">Physical loans plus digital accesses.</p></div></div>'}
+function vCat(){
+  var list=RES.filter(function(r){var t=(r[1]+' '+r[2]+' '+CATS[r[4]]).toLowerCase();return t.indexOf(q.toLowerCase())>-1&&(!tf||r[3]===tf)});
+  return '<div class="row"><input type="search" id="q" placeholder="Search title, author or category" value="'+q.replace(/"/g,'&quot;')+'" aria-label="Search catalogue"><select id="tf" aria-label="Resource type"><option value="">All types</option><option value="P"'+(tf==='P'?' selected':'')+'>Physical books</option><option value="D"'+(tf==='D'?' selected':'')+'>Digital resources</option></select></div>'+
+  '<div class="legend"><span><i class="sq a"></i> available</span><span><i class="sq i"></i> on loan</span><span><i class="sq x"></i> lost or damaged</span></div>'+
+  (list.length?list.map(function(r){var c=CATS[r[4]],body;
+    if(r[3]==='P'){var a=r[6].filter(function(x){return cstatus(x)==='AVAILABLE'}).length;
+      body='<div class="copies">'+r[6].map(function(x){var s=cstatus(x);return '<i class="sq '+(s==='AVAILABLE'?'a':s==='ISSUED'?'i':'x')+'" title="Copy '+x+': '+s.toLowerCase()+'"></i>'}).join('')+'<span>'+a+' of '+r[6].length+' available</span></div>'}
+    else body='<div class="copies"><span class="tag ok">digital</span><span>'+r[6]+' · '+r[7]+' accesses</span></div>';
+    return '<div class="book"><div class="spine" style="background:'+SPINE[c]+'"></div><div class="in"><h3>'+r[1]+'</h3><div class="meta">'+r[2]+' · '+c+' · '+r[5]+'</div>'+body+'</div></div>'}).join(''):'<p class="meta">No titles match. Try a shorter search or clear the type filter.</p>')}
+function vCirc(){
+  var mo=MEM.map(function(m){return '<option value="'+m[0]+'">'+m[1]+' ('+m[2]+')</option>'}).join('');
+  var co=RES.filter(function(r){return r[3]==='P'}).map(function(r){return r[6].filter(function(c){return cstatus(c)==='AVAILABLE'}).map(function(c){return '<option value="'+c+'">'+r[1]+' – copy '+c+'</option>'}).join('')}).join('');
+  var rows=open().sort(function(a,b){return a.d<b.d?-1:1}).map(function(l){var late=l.d<TODAY;return '<tr><td>'+mem(l.m)[1]+'</td><td>'+resOfCopy(l.c)[1]+'</td><td>'+l.i+'</td><td>'+l.d+(late?' <span class="tag bad">'+days(l.d,TODAY)+' days late</span>':'')+'</td><td><button class="btn" type="button" data-ret="'+l.id+'">Return book</button></td></tr>'}).join('');
+  return '<div class="panel"><h3>Issue a book</h3><div class="row"><select id="im" aria-label="Member">'+mo+'</select><select id="ic" aria-label="Book copy">'+co+'</select><button class="btn pri" type="button" id="issue">Issue book</button></div><div id="msg" role="status" class="'+mcls+'">'+msg+'</div><p class="meta">Issue checks the same rules as the database: the copy must be available, the membership active, and the member under the plan limit.</p></div>'+
+  '<div class="panel"><h3>Books on loan</h3><div class="wrap"><table><tr><th>Member</th><th>Title</th><th>Issued</th><th>Due</th><th></th></tr>'+(rows||'<tr><td colspan="5">No books are on loan.</td></tr>')+'</table></div></div>'}
+function vMem(){
+  return '<div class="panel"><h3>Members</h3><div class="wrap"><table><tr><th>Name</th><th>Plan</th><th>Status</th><th>Limit</th><th>Open loans</th><th>Total loans</th><th>Fines charged</th></tr>'+MEM.map(function(m){var ls=S.loans.filter(function(l){return l.m===m[0]});var f=ls.reduce(function(s,l){return s+fineOf(l)},0);return '<tr><td>'+m[1]+'</td><td>'+m[2]+'</td><td>'+tagS(m[3])+'</td><td>'+PLANS[m[2]].max+' books · '+PLANS[m[2]].days+' days</td><td>'+openOf(m[0])+'</td><td>'+ls.length+'</td><td>₹'+f+'</td></tr>'}).join('')+'</table></div></div>'}
+function vRes(){
+  return '<div class="panel"><h3>Pending reservations</h3><div class="wrap"><table><tr><th>Member</th><th>Title</th><th>Copies available now</th></tr>'+RESV.map(function(v){var r=RES.filter(function(x){return x[0]===v[1]})[0];var a=r[6].filter(function(c){return cstatus(c)==='AVAILABLE'}).length;return '<tr><td>'+mem(v[0])[1]+'</td><td>'+r[1]+'</td><td>'+(a?'<span class="tag ok">'+a+' ready to issue</span>':'<span class="tag warn">all copies out</span>')+'</td></tr>'}).join('')+'</table></div></div>'}
+function render(){nav();var v={over:vOver,cat:vCat,circ:vCirc,mem:vMem,res:vRes}[cur]();document.getElementById('app').innerHTML='<h2 style="margin-bottom:4px">'+tabs.filter(function(t){return t[0]===cur})[0][1]+'</h2>'+v;
+  if(cur==='cat'){var qi=document.getElementById('q');qi.oninput=function(){q=qi.value;var p=qi.selectionStart;render();var n=document.getElementById('q');n.focus();n.setSelectionRange(p,p)};document.getElementById('tf').onchange=function(e){tf=e.target.value;render()}}}
+document.getElementById('today').textContent='Demo date: '+TODAY;
+document.getElementById('nav').addEventListener('click',function(e){var t=e.target.getAttribute('data-t');if(t){cur=t;msg='';render()}});
+document.getElementById('reset').addEventListener('click',function(){S=fresh();save();msg='';render()});
+document.getElementById('app').addEventListener('click',function(e){
+  var rid=e.target.getAttribute('data-ret');
+  if(rid){var l=S.loans.filter(function(x){return x.id==rid})[0];l.r=TODAY;var f=fineOf(l);save();msg='Returned “'+resOfCopy(l.c)[1]+'”.'+(f?' Late fine charged: ₹'+f+'.':' No fine.');mcls=f?'err':'good';render();return}
+  if(e.target.id==='issue'){
+    var m=mem(+document.getElementById('im').value),c=+document.getElementById('ic').value,p=PLANS[m[2]];
+    if(!c){msg='No copies are available to issue.';mcls='err'}
+    else if(m[3]!=='ACTIVE'){msg=m[1]+'’s membership is '+m[3].toLowerCase()+'. Renew it before issuing books.';mcls='err'}
+    else if(openOf(m[0])>=p.max){msg=m[1]+' has reached the '+m[2]+' plan limit of '+p.max+' books. Return one first.';mcls='err'}
+    else{var id=S.loans.length+1;S.loans.push({id:id,m:m[0],c:c,i:TODAY,d:addDays(TODAY,p.days),r:null});save();msg='Issued to '+m[1]+'. Due on '+addDays(TODAY,p.days)+'.';mcls='good'}
+    render()}
+});
+render();
+})();
+</script>
+</body>
+</html>
